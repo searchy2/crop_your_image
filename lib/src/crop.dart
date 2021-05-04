@@ -14,13 +14,13 @@ class Crop extends StatelessWidget {
 
   /// fixed aspect ratio of cropping area.
   /// null, by default, means no fixed aspect ratio.
-  final double? aspectRatio;
+  final double aspectRatio;
 
   /// initial size of cropping area.
   /// Set double value less than 1.0.
   /// if initialSize is 1.0 (or null),
   /// cropping area would expand as much as possible.
-  final double? initialSize;
+  final double initialSize;
 
   /// Initial [Rect] of cropping area.
   /// This [Rect] must be based on the rect of [image] data, not screen.
@@ -33,20 +33,20 @@ class Crop extends StatelessWidget {
   /// In other hand, [aspectRatio] is still enabled although initial shape of
   /// cropping area depends on [initialArea]. Once user moves cropping area
   /// with their hand, the shape of cropping area is calculated depending on [aspectRatio].
-  final Rect? initialArea;
+  final Rect initialArea;
 
   /// flag if cropping image with circle shape.
   /// if [true], [aspectRatio] is fixed to 1.
   final bool withCircleUi;
 
   /// conroller for control crop actions
-  final CropController? controller;
+  final CropController controller;
 
   /// Callback that is called when cropping area moved.
-  final ValueChanged<Rect>? onMoved;
+  final ValueChanged<Rect> onMoved;
 
   /// [Color] of the mask widget which is placed over the cropping editor.
-  final Color? maskColor;
+  final Color maskColor;
 
   /// [Color] of the base color of the cropping editor.
   final Color baseColor;
@@ -56,12 +56,12 @@ class Crop extends StatelessWidget {
   /// and [cornerIndex] which indicates the position of each dots like below:
   /// 0: left-top, 1: right-top, 2: left-bottom, 3: right-bottom.
   /// If default dot Widget with different color is needed, [DotControl] is available.
-  final CornerDotBuilder? cornerDotBuilder;
+  final CornerDotBuilder cornerDotBuilder;
 
   const Crop({
-    Key? key,
-    required this.image,
-    required this.onCropped,
+    Key key,
+    @required this.image,
+    @required this.onCropped,
     this.aspectRatio,
     this.initialSize,
     this.initialArea,
@@ -106,20 +106,20 @@ class Crop extends StatelessWidget {
 class _CropEditor extends StatefulWidget {
   final Uint8List image;
   final ValueChanged<Uint8List> onCropped;
-  final double? aspectRatio;
-  final double? initialSize;
-  final Rect? initialArea;
+  final double aspectRatio;
+  final double initialSize;
+  final Rect initialArea;
   final bool withCircleUi;
-  final CropController? controller;
-  final ValueChanged<Rect>? onMoved;
-  final Color? maskColor;
+  final CropController controller;
+  final ValueChanged<Rect> onMoved;
+  final Color maskColor;
   final Color baseColor;
-  final CornerDotBuilder? cornerDotBuilder;
+  final CornerDotBuilder cornerDotBuilder;
 
   const _CropEditor({
-    Key? key,
-    required this.image,
-    required this.onCropped,
+    Key key,
+    @required this.image,
+    @required this.onCropped,
     this.aspectRatio,
     this.initialSize,
     this.initialArea,
@@ -127,7 +127,7 @@ class _CropEditor extends StatefulWidget {
     this.controller,
     this.onMoved,
     this.maskColor,
-    required this.baseColor,
+    @required this.baseColor,
     this.cornerDotBuilder,
   }) : super(key: key);
 
@@ -136,12 +136,12 @@ class _CropEditor extends StatefulWidget {
 }
 
 class _CropEditorState extends State<_CropEditor> {
-  late CropController _cropController;
-  late Rect _rect;
-  image.Image? _targetImage;
-  late Rect _imageRect;
+  CropController _cropController;
+  Rect _rect;
+  image.Image _targetImage;
+  Rect _imageRect;
 
-  double? _aspectRatio;
+  double _aspectRatio;
   bool _withCircleUi = false;
   bool _isFitVertically = false;
 
@@ -188,35 +188,37 @@ class _CropEditorState extends State<_CropEditor> {
   }
 
   // decode orientation awared Image.
-  image.Image? _fromByteData(Uint8List data) {
+  image.Image _fromByteData(Uint8List data) {
     final tempImage = image.decodeImage(data);
     assert(tempImage != null);
 
     // check orientation
-    switch (tempImage?.exif.data[0x0112] ?? -1) {
+    switch (tempImage?.exif?.data[0x0112] ?? -1) {
       case 3:
-        return image.copyRotate(tempImage!, 180);
+        return image.copyRotate(tempImage, 180);
       case 6:
-        return image.copyRotate(tempImage!, 90);
+        return image.copyRotate(tempImage, 90);
       case 8:
-        return image.copyRotate(tempImage!, -90);
+        return image.copyRotate(tempImage, -90);
     }
     return tempImage;
   }
 
   /// reset image to be cropped
   void _resetImage(Uint8List targetImage) {
-    setState(() {
-      _targetImage = _fromByteData(targetImage);
-    });
-    _resetCroppingArea();
+    if (mounted) {
+      setState(() {
+        _targetImage = _fromByteData(targetImage);
+        _resetCroppingArea();
+      });
+    }
   }
 
   /// reset [Rect] of cropping area with current state
   void _resetCroppingArea() {
     final screenSize = MediaQuery.of(context).size;
 
-    final imageRatio = _targetImage!.width / _targetImage!.height;
+    final imageRatio = _targetImage.width / _targetImage.height;
     _isFitVertically = imageRatio < screenSize.aspectRatio;
 
     _imageRect = calculator.imageRect(screenSize, imageRatio);
@@ -225,7 +227,7 @@ class _CropEditorState extends State<_CropEditor> {
   }
 
   /// resize cropping area with given aspect ratio.
-  void _resizeWith(double? aspectRatio, Rect? initialArea) {
+  void _resizeWith(double aspectRatio, Rect initialArea) {
     _aspectRatio = _withCircleUi ? 1 : aspectRatio;
 
     if (initialArea == null) {
@@ -237,7 +239,7 @@ class _CropEditorState extends State<_CropEditor> {
       );
     } else {
       final screenSizeRatio = calculator.screenSizeRatio(
-        _targetImage!,
+        _targetImage,
         MediaQuery.of(context).size,
       );
       rect = Rect.fromLTWH(
@@ -254,7 +256,7 @@ class _CropEditorState extends State<_CropEditor> {
     assert(_targetImage != null);
 
     final screenSizeRatio = calculator.screenSizeRatio(
-      _targetImage!,
+      _targetImage,
       MediaQuery.of(context).size,
     );
 
@@ -262,7 +264,7 @@ class _CropEditorState extends State<_CropEditor> {
     final cropResult = await compute(
       withCircleShape ? _doCropCircle : _doCrop,
       [
-        _targetImage!,
+        _targetImage,
         Rect.fromLTWH(
           (_rect.left - _imageRect.left) * screenSizeRatio,
           (_rect.top - _imageRect.top) * screenSizeRatio,
@@ -437,7 +439,7 @@ class _CircleCropAreaClipper extends CustomClipper<Path> {
 /// This Widget automaticall fits the appropriate size.
 class DotControl extends StatelessWidget {
   const DotControl({
-    Key? key,
+    Key key,
     this.color = Colors.white,
     this.padding = 8,
   }) : super(key: key);
@@ -495,12 +497,19 @@ Uint8List _doCropCircle(List<dynamic> cropData) {
   final rect = cropData[1] as Rect;
   return Uint8List.fromList(
     image.encodePng(
-      image.copyCropCircle(
+      image.copyCrop(
         originalImage,
-        center:
-            image.Point(rect.left + rect.width / 2, rect.top + rect.height / 2),
-        radius: min(rect.width, rect.height) ~/ 2,
+        rect.left.toInt(),
+        rect.top.toInt(),
+        rect.width.toInt(),
+        rect.height.toInt(),
       ),
+      // image.copyCrop(
+      //   originalImage,
+      //   center:
+      //       image.Point(rect.left + rect.width / 2, rect.top + rect.height / 2),
+      //   radius: min(rect.width, rect.height) ~/ 2,
+      // ),
     ),
   );
 }

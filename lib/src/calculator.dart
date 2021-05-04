@@ -38,7 +38,7 @@ abstract class _Calculator {
 
   /// calculates [Rect] of the result of user moving the top-left dot.
   Rect moveTopLeft(Rect original, double deltaX, double deltaY, Rect imageRect,
-      double? aspectRatio) {
+      double aspectRatio) {
     final newLeft =
         max(imageRect.left, min(original.left + deltaX, original.right - 40));
     final newTop =
@@ -84,7 +84,7 @@ abstract class _Calculator {
 
   /// calculates [Rect] of the result of user moving the top-right dot.
   Rect moveTopRight(Rect original, double deltaX, double deltaY, Rect imageRect,
-      double? aspectRatio) {
+      double aspectRatio) {
     final newTop =
         min(max(original.top + deltaY, imageRect.top), original.bottom - 40);
     final newRight =
@@ -130,7 +130,7 @@ abstract class _Calculator {
 
   /// calculates [Rect] of the result of user moving the bottom-left dot.
   Rect moveBottomLeft(Rect original, double deltaX, double deltaY,
-      Rect imageRect, double? aspectRatio) {
+      Rect imageRect, double aspectRatio) {
     final newLeft =
         max(imageRect.left, min(original.left + deltaX, original.right - 40));
     final newBottom =
@@ -177,7 +177,7 @@ abstract class _Calculator {
 
   /// calculates [Rect] of the result of user moving the bottom-right dot.
   Rect moveBottomRight(Rect original, double deltaX, double deltaY,
-      Rect imageRect, double? aspectRatio) {
+      Rect imageRect, double aspectRatio) {
     final newRight =
         min(imageRect.right, max(original.right + deltaX, original.left + 40));
     final newBottom =

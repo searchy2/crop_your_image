@@ -2,7 +2,7 @@ part of crop_your_image;
 
 /// Controller to control crop actions.
 class CropController {
-  late CropControllerDelegate _delegate;
+  CropControllerDelegate _delegate;
 
   /// setter for [CropControllerDelegate]
   set delegate(CropControllerDelegate value) => _delegate = value;
@@ -19,7 +19,7 @@ class CropController {
 
   /// change fixed aspect ratio
   /// if [value] is null, cropping area can be moved without fixed aspect ratio.
-  set aspectRatio(double? value) => _delegate.onChangeAspectRatio(value);
+  set aspectRatio(double value) => _delegate.onChangeAspectRatio(value);
 
   /// change if cropping with circle shaped UI.
   /// if [value] is true, [aspectRatio] automatically fixed with 1
@@ -37,20 +37,20 @@ class CropController {
 class CropControllerDelegate {
   /// callback that [CropController.crop] is called.
   /// the meaning of the value is if cropping a image with circle shape.
-  late ValueChanged<bool> onCrop;
+  ValueChanged<bool> onCrop;
 
   /// callback that [CropController.image] is set.
-  late ValueChanged<Uint8List> onImageChanged;
+  ValueChanged<Uint8List> onImageChanged;
 
   /// callback that [CropController.aspectRatio] is set.
-  late ValueChanged<double?> onChangeAspectRatio;
+  ValueChanged<double> onChangeAspectRatio;
 
   /// callback that [CropController.withCircleUi] is changed.
-  late ValueChanged<bool> onChangeWithCircleUi;
+  ValueChanged<bool> onChangeWithCircleUi;
 
   /// callback that [CropController.rect] is changed.
-  late ValueChanged<Rect> onChangeRect;
+  ValueChanged<Rect> onChangeRect;
 
   /// callback that [CropController.area] is changed.
-  late ValueChanged<Rect> onChangeArea;
+  ValueChanged<Rect> onChangeArea;
 }

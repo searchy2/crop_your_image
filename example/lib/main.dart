@@ -1,3 +1,5 @@
+// @dart=2.9
+
 import 'dart:typed_data';
 
 import 'package:crop_your_image/crop_your_image.dart';
@@ -59,7 +61,7 @@ class _CropSampleState extends State<CropSample> {
   var _isSumbnail = false;
   var _isCropping = false;
   var _isCircleUi = false;
-  Uint8List? _croppedData;
+  Uint8List _croppedData;
 
   @override
   void initState() {
@@ -151,7 +153,7 @@ class _CropSampleState extends State<CropSample> {
                   replacement: Center(
                     child: _croppedData == null
                         ? SizedBox.shrink()
-                        : Image.memory(_croppedData!),
+                        : Image.memory(_croppedData),
                   ),
                 ),
               ),
